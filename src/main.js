@@ -1754,6 +1754,7 @@ function setupModalAndLeadForm() {
     if (inputModel) inputModel.value = modelName;
     modal?.classList.add('open');
     modal?.setAttribute('aria-hidden', 'false');
+    document.body.classList.add('modal-open');
     pixel.trackInitiateQuote({ name: modelName }, modality);
     // Bloquear scroll de fondo en móviles al abrir modal
     document.body.style.overflow = 'hidden';
@@ -1766,7 +1767,12 @@ function setupModalAndLeadForm() {
   function closeModal() {
     modal?.classList.remove('open');
     modal?.setAttribute('aria-hidden', 'true');
-    document.body.style.overflow = '';
+    const prefModal = document.getElementById('cookie-preferences-modal');
+    const privacyModal = document.getElementById('privacy-modal');
+    if (!prefModal?.classList.contains('open') && !privacyModal?.classList.contains('open')) {
+      document.body.classList.remove('modal-open');
+      document.body.style.overflow = '';
+    }
   }
 
   closeBtn?.addEventListener('click', closeModal);
@@ -1999,7 +2005,19 @@ function setupCookieConsent() {
 
   if (!banner) return;
 
+  if (window.location.search.includes('reset_cookies')) {
+    localStorage.removeItem('cima_cookie_consent');
+  }
+
   const currentConsent = pixel.getConsent();
+
+  function updateBannerMetrics() {
+    if (banner && banner.classList.contains('visible')) {
+      const bannerH = banner.offsetHeight || 96;
+      document.documentElement.style.setProperty('--cookie-banner-h', `${bannerH}px`);
+      document.body.classList.add('cookie-banner-active');
+    }
+  }
 
   // Si no ha respondido al banner, mostrarlo con animación
   if (!currentConsent.prompted) {
@@ -2007,13 +2025,17 @@ function setupCookieConsent() {
       banner.style.display = 'block';
       requestAnimationFrame(() => {
         banner.classList.add('visible');
+        updateBannerMetrics();
       });
       pixel.recordEvent('CookieBannerShown', { status: 'prompted' });
     }, 1200);
   }
 
+  window.addEventListener('resize', updateBannerMetrics, { passive: true });
+
   function dismissBanner() {
     banner.classList.remove('visible');
+    document.body.classList.remove('cookie-banner-active');
     setTimeout(() => {
       banner.style.display = 'none';
     }, 350);
@@ -2026,6 +2048,7 @@ function setupCookieConsent() {
 
     prefModal?.classList.add('open');
     prefModal?.setAttribute('aria-hidden', 'false');
+    document.body.classList.add('modal-open');
     document.body.style.overflow = 'hidden';
   }
 
@@ -2035,6 +2058,7 @@ function setupCookieConsent() {
     const quoteModal = document.getElementById('quote-modal');
     const privacyModal = document.getElementById('privacy-modal');
     if (!quoteModal?.classList.contains('open') && !privacyModal?.classList.contains('open')) {
+      document.body.classList.remove('modal-open');
       document.body.style.overflow = '';
     }
   }
@@ -2102,6 +2126,7 @@ function setupPrivacyModal() {
   function openPrivacyModal(triggerSource = 'Generic') {
     modal?.classList.add('open');
     modal?.setAttribute('aria-hidden', 'false');
+    document.body.classList.add('modal-open');
     document.body.style.overflow = 'hidden';
     pixel.recordEvent('PrivacyModalView', { source: triggerSource });
   }
@@ -2110,7 +2135,9 @@ function setupPrivacyModal() {
     modal?.classList.remove('open');
     modal?.setAttribute('aria-hidden', 'true');
     const quoteModal = document.getElementById('quote-modal');
-    if (!quoteModal?.classList.contains('open')) {
+    const prefModal = document.getElementById('cookie-preferences-modal');
+    if (!quoteModal?.classList.contains('open') && !prefModal?.classList.contains('open')) {
+      document.body.classList.remove('modal-open');
       document.body.style.overflow = '';
     }
   }

@@ -2287,7 +2287,7 @@ h1, h2, h3, h4, h5 {
   inset: 0;
   background: rgba(15, 23, 42, 0.65);
   backdrop-filter: blur(8px);
-  z-index: 1000;
+  z-index: 1050;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -2631,7 +2631,7 @@ h1, h2, h3, h4, h5 {
   position: fixed;
   bottom: 1.5rem;
   right: 1.5rem;
-  z-index: 999;
+  z-index: 998;
   background: #25d366;
   color: #ffffff;
   padding: 0.85rem 1.4rem;
@@ -2642,13 +2642,35 @@ h1, h2, h3, h4, h5 {
   box-shadow: 0 8px 25px rgba(37, 211, 102, 0.45);
   font-weight: 700;
   font-size: 0.95rem;
-  transition: all var(--transition-fast);
+  transition: bottom 0.35s cubic-bezier(0.16, 1, 0.3, 1), 
+              opacity 0.25s ease, 
+              visibility 0.25s ease, 
+              transform var(--transition-fast), 
+              background var(--transition-fast), 
+              box-shadow var(--transition-fast);
 }
 
 .floating-whatsapp:hover {
   transform: translateY(-3px) scale(1.02);
   background: #20ba5a;
   box-shadow: 0 12px 30px rgba(37, 211, 102, 0.55);
+}
+
+/* Cuando el banner de cookies está visible en pantalla, elevar el botón de WhatsApp
+   para que NUNCA estorbe a los botones de "Aceptar Todas", "Solo Necesarias" o "Personalizar" */
+body.cookie-banner-active .floating-whatsapp,
+body:has(#cookie-consent-banner.visible) .floating-whatsapp {
+  bottom: calc(var(--cookie-banner-h, 96px) + 1.25rem);
+}
+
+/* Ocultar el botón de WhatsApp cuando haya cualquier modal abierto (Preferencias, Aviso de Privacidad, Cotización)
+   para que no se encime sobre las acciones del modal ni genere distracciones visuales */
+body:has(.modal-overlay.open) .floating-whatsapp,
+body.modal-open .floating-whatsapp {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transform: translateY(12px) scale(0.95);
 }
 
 .whatsapp-svg {
@@ -3700,7 +3722,7 @@ h1, h2, h3, h4, h5 {
   bottom: 0;
   left: 0;
   right: 0;
-  z-index: 997;
+  z-index: 1000;
   background: rgba(255, 255, 255, 0.98);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
