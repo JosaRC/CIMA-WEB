@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9
+        http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
+  <!-- Página Principal / Hero y Resumen Operativo -->
+  <url>
+    <loc>https://cima-montacargas.mx/</loc>
+    <lastmod>2026-10-21</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  
+  <!-- Catálogo de Montacargas Gas LP, Eléctricos y Diésel -->
+  <url>
+    <loc>https://cima-montacargas.mx/#catalogo</loc>
+    <lastmod>2026-10-21</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  
+  <!-- Cobertura en Parques Industriales de Aguascalientes y Mapa -->
+  <url>
+    <loc>https://cima-montacargas.mx/#cobertura-industrial</loc>
+    <lastmod>2026-10-21</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+  </url>
+
+  <!-- ¿Quiénes Somos? - Trayectoria de 15 años y Certificación STPS -->
+  <url>
+    <loc>https://cima-montacargas.mx/#quienes-somos</loc>
+    <lastmod>2026-10-21</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- Calculadora y Asesor de Carga para Naves Industriales -->
+  <url>
+    <loc>https://cima-montacargas.mx/#calculadora</loc>
+    <lastmod>2026-10-21</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- Sección de Artículos y Guías Técnicas B2B -->
+  <url>
+    <loc>https://cima-montacargas.mx/#blog</loc>
+    <lastmod>2026-10-21</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+  </url>
+
+  <!-- Artículo 1: ¿Cuándo necesito un montacargas en mi negocio? -->
+  <url>
+    <loc>https://cima-montacargas.mx/#blog/cuando-necesito-un-montacargas</loc>
+    <lastmod>2026-10-21</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- Artículo 2: ¿Vale la pena rentar o comprar un montacargas en 2026? -->
+  <url>
+    <loc>https://cima-montacargas.mx/#blog/vale-la-pena-rentar-un-montacargas</loc>
+    <lastmod>2026-10-21</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- Formulario Directo y Cotización B2B -->
+  <url>
+    <loc>https://cima-montacargas.mx/#contacto</loc>
+    <lastmod>2026-10-21</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+</urlset>
