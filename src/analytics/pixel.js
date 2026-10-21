@@ -49,6 +49,45 @@ class CIMAPixelEngine {
     });
   }
 
+  getConsent() {
+    try {
+      const raw = localStorage.getItem('cima_cookie_consent');
+      if (!raw) return { necessary: true, analytics: false, marketing: false, prompted: false };
+      if (raw === 'all') return { necessary: true, analytics: true, marketing: true, prompted: true };
+      if (raw === 'essential') return { necessary: true, analytics: false, marketing: false, prompted: true };
+      const parsed = JSON.parse(raw);
+      return {
+        necessary: true,
+        analytics: Boolean(parsed.analytics),
+        marketing: Boolean(parsed.marketing),
+        prompted: true
+      };
+    } catch (_) {
+      return { necessary: true, analytics: false, marketing: false, prompted: false };
+    }
+  }
+
+  setConsent(consentObj) {
+    const consent = {
+      necessary: true,
+      analytics: Boolean(consentObj.analytics),
+      marketing: Boolean(consentObj.marketing),
+      prompted: true,
+      timestamp: Date.now()
+    };
+    try {
+      localStorage.setItem('cima_cookie_consent', JSON.stringify(consent));
+    } catch (_) {}
+
+    this.recordEvent('CookieConsentUpdate', {
+      analytics: consent.analytics ? 'Concedido' : 'Denegado',
+      marketing: consent.marketing ? 'Concedido' : 'Denegado',
+      status: consent.analytics && consent.marketing ? 'Aceptadas Todas' : 'Personalizadas'
+    }, ['DataLayer']);
+
+    return consent;
+  }
+
   // Suscribirse a eventos para el visor en vivo (HUD)
   subscribe(callback) {
     this.subscribers.push(callback);
@@ -64,13 +103,53 @@ class CIMAPixelEngine {
       second: '2-digit'
     });
 
+    const consent = this.getConsent();
+    const activePlatforms = [...platforms];
+
+    // Despachar a dataLayer siempre (interno de sesión)
+    window.dataLayer.push({
+      event: eventName,
+      ...payload,
+      consent_status: consent,
+      cima_timestamp: Date.now()
+    });
+
+    // Despachar a Meta Pixel (fbq) SOLO con consentimiento de Marketing
+    if (typeof window.fbq === 'function') {
+      if (consent.marketing) {
+        const isStandardMeta = ['PageView', 'ViewContent', 'Lead', 'Contact', 'InitiateCheckout', 'CustomizeProduct'].includes(eventName);
+        if (isStandardMeta) {
+          window.fbq('track', eventName, payload);
+        } else {
+          window.fbq('trackCustom', eventName, payload);
+        }
+      } else {
+        const idx = activePlatforms.indexOf('Meta Pixel');
+        if (idx !== -1) activePlatforms[idx] = 'Meta Pixel (Pausado por Cookie)';
+      }
+    }
+
+    // Despachar a Google Ads / GA4 (gtag) SOLO con consentimiento de Analítica o Marketing
+    if (typeof window.gtag === 'function') {
+      if (consent.analytics || consent.marketing) {
+        window.gtag('event', eventName, {
+          send_to: this.googleAdsId,
+          ...payload
+        });
+      } else {
+        const idx = activePlatforms.indexOf('Google Ads');
+        if (idx !== -1) activePlatforms[idx] = 'Google Ads (Pausado por Cookie)';
+      }
+    }
+
     const eventRecord = {
       id: Math.random().toString(36).substring(2, 9),
       name: eventName,
       payload,
-      platforms,
+      platforms: activePlatforms,
       timestamp,
-      rawTime: Date.now()
+      rawTime: Date.now(),
+      consent
     };
 
     this.eventLog.unshift(eventRecord);
@@ -79,32 +158,7 @@ class CIMAPixelEngine {
     // Notificar al visor en pantalla
     this.subscribers.forEach(fn => fn(eventRecord));
 
-    // Despachar a dataLayer
-    window.dataLayer.push({
-      event: eventName,
-      ...payload,
-      cima_timestamp: Date.now()
-    });
-
-    // Despachar a Meta Pixel (fbq)
-    if (typeof window.fbq === 'function') {
-      const isStandardMeta = ['PageView', 'ViewContent', 'Lead', 'Contact', 'InitiateCheckout', 'CustomizeProduct'].includes(eventName);
-      if (isStandardMeta) {
-        window.fbq('track', eventName, payload);
-      } else {
-        window.fbq('trackCustom', eventName, payload);
-      }
-    }
-
-    // Despachar a Google Ads / GA4 (gtag)
-    if (typeof window.gtag === 'function') {
-      window.gtag('event', eventName, {
-        send_to: this.googleAdsId,
-        ...payload
-      });
-    }
-
-    console.log(`%c[CIMA PIXEL] 🎯 ${eventName}`, 'background: #F59E0B; color: #000; font-weight: bold; padding: 2px 6px; border-radius: 3px;', payload);
+    console.log(`%c[CIMA PIXEL] 🎯 ${eventName}`, 'background: #19447c; color: #fff; font-weight: bold; padding: 2px 6px; border-radius: 3px;', payload);
   }
 
   // --- MÉTODOS DE EVENTOS CLAVE DE NEGOCIO ---

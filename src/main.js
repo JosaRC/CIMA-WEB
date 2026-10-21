@@ -5,12 +5,22 @@ import { BLOG_POSTS } from './data/blog.js';
 import { initParallaxForklift } from './components/parallaxForklift.js';
 
 let currentRoute = '';
+let mobileMenuInitialized = false;
+let faqInitialized = false;
+let cookieConsentInitialized = false;
+let privacyModalInitialized = false;
+let movementTrackingInitialized = false;
 
 function initApp() {
-  setupRouting();
+  window.pixel = pixel;
   setupPixelHUD();
+  setupRouting();
   setupModalAndLeadForm();
+  setupPrivacyModal();
+  setupCookieConsent();
   setupWhatsAppIntegration();
+  setupSocialTrackers();
+  setupGlobalMovementTracking();
 
   // Registro de evento inicial de página
   pixel.trackPageView('CIMA Montacargas Aguascalientes - Inicio');
@@ -105,7 +115,7 @@ function renderMainScreens() {
         <!-- PANTALLA 1: INICIO / HERO (MONTACARGAS 3D CON ROTACIÓN POR MOUSE, BORDE EN SENTIDO RELOJ EN HOVER Y ¿QUÉ ES CIMA?) -->
         <section class="stacked-screen screen-hero" id="inicio" data-screen="01">
         <div class="screen-header-badge">
-          <span class="screen-counter-pill">Pantalla 01 / 07</span>
+          <span class="screen-counter-pill">Pantalla 01 / 03</span>
           <span class="screen-title-sub">Solución de Elevación Industrial Multi-Marca Aguascalientes</span>
         </div>
 
@@ -115,11 +125,6 @@ function renderMainScreens() {
           <div class="col-parallax" id="tarjeta-3d">
             <div class="parallax-card-viewport">
               <div class="parallax-stage-card">
-                <!-- Capa Borde Animado: Recorrido perimetral en el sentido de las agujas del reloj en hover -->
-                <svg class="border-trace-svg" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
-                  <rect class="border-trace-rect" x="0.5" y="0.5" width="99" height="99" rx="3.5" ry="3.5" pathLength="100"/>
-                </svg>
-
                 <!-- Capa 0: Fondo de estudio con cuadrícula isométrica 3D -->
                 <div class="layer-bg">
                   <div class="studio-grid-floor"></div>
@@ -264,368 +269,627 @@ function renderMainScreens() {
       </div>
       </section>
 
-      <!-- PANTALLA 2: UBICACIÓN DEL TALLER, HORARIOS Y GOOGLE MAPS -->
-      <section class="stacked-screen screen-cobertura" id="cobertura-industrial" data-screen="02">
+      <!-- PANTALLA 2: CATÁLOGO OFICIAL EN CARRETE HORIZONTAL CON FLECHAS (SIN CONFLICTO CON SCROLL DOWN) -->
+      <section class="stacked-screen screen-catalogo" id="catalogo" data-screen="02">
         <div class="screen-header-badge">
-          <span class="screen-counter-pill">Pantalla 02 / 07</span>
-          <span class="screen-title-sub">Taller Matriz, Horarios de Atención & Google Maps</span>
+          <span class="screen-counter-pill">Pantalla 02 / 03</span>
+          <span class="screen-title-sub">Catálogo Interactivo 3D en Carrete Horizontal</span>
         </div>
 
         <div class="screen-body-animated">
-          <div class="two-col-grid">
-          <!-- Columna Izquierda: Mapa Interactivo de Google Maps y Ubicación del Taller -->
-          <div class="map-card-container">
-            <div class="map-card-header">
-              <div class="map-title-row">
-                <span class="live-pin-dot"></span>
-                <div>
-                  <div class="map-main-title">Taller Matriz CIMA: Av. Héroe de Nacozari #2206</div>
-                  <div class="map-address-text">Col. Morelos, C.P. 20140, Aguascalientes, Ags.</div>
-                </div>
-              </div>
-              <a href="https://maps.google.com/?q=Av.+Heroe+de+Nacozari+2206,+Morelos,+20140+Aguascalientes,+Ags." target="_blank" rel="noopener noreferrer" class="btn btn-outline btn-sm">
-                <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
-                Cómo Llegar en Maps
-              </a>
-            </div>
-
-            <div class="google-maps-frame-wrap">
-              <iframe 
-                title="Ubicación CIMA Montacargas Av Heroe de Nacozari 2206 Aguascalientes"
-                src="https://maps.google.com/maps?q=Av.+Heroe+de+Nacozari+2206,+Morelos,+20140+Aguascalientes,+Ags.&t=&z=16&ie=UTF8&iwloc=&output=embed"
-                width="100%" 
-                height="320" 
-                style="border:0;" 
-                allowfullscreen="" 
-                loading="lazy" 
-                referrerpolicy="no-referrer-when-downgrade">
-              </iframe>
-            </div>
-
-            <div class="map-card-footer">
-              <a href="tel:+524492516028" class="contact-pill-link">
-                <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
-                <span>(449) 251-6028</span>
-              </a>
-              <a href="mailto:ventas@cimamontacargas.com.mx" class="contact-pill-link">
-                <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
-                <span>ventas@cimamontacargas.com.mx</span>
-              </a>
-            </div>
+          <div class="section-heading-full">
+            <div class="section-tag">Flota Disponible 2026</div>
+            <h2 class="section-title">Catálogo Oficial de Montacargas <span>CIMA</span></h2>
+            <p class="section-desc">
+              Explora nuestra maquinaria hacia la derecha o regresa a la izquierda con las flechas de navegación sin interrumpir tu desplazamiento vertical. Haz click en cualquier tarjeta para voltearla en 3D y descubrir especificaciones y tarifas deducibles.
+            </p>
           </div>
 
-          <!-- Columna Derecha: Tarjeta de Horarios y Atención del Taller -->
-          <div class="col-text">
-            <div class="section-tag">Visitas & Soporte Técnico</div>
-            <h2>Horarios de Atención en <span>Taller y Oficinas</span></h2>
-            
-            <div class="shop-status-badge ${shopStatus.class}" style="margin-bottom: 1.25rem;">
-              <span class="status-indicator-dot"></span>
-              <span>${shopStatus.text}</span>
-            </div>
+          <!-- CARRETE DE CATÁLOGO (HORIZONTAL REEL) -->
+          <div class="catalog-reel-wrapper">
+            <div class="catalog-reel-header">
+              <div class="catalog-filter-bar">
+                <button class="filter-btn active" data-filter="all">Todos los Equipos</button>
+                <button class="filter-btn" data-filter="combustion">Gas LP / Combustión</button>
+                <button class="filter-btn" data-filter="electric">Eléctricos Ion-Litio</button>
+                <button class="filter-btn" data-filter="reach">Pasillo Angosto (Reach)</button>
+                <button class="filter-btn" data-filter="diesel">Diésel Heavy Duty</button>
+              </div>
 
-            <!-- Tabla de Horarios Semanales -->
-            <div class="schedule-table-card">
-              <div class="schedule-row">
-                <span class="day-label">Lunes</span>
-                <span class="hours-val">09:00 am - 06:00 pm</span>
-              </div>
-              <div class="schedule-row">
-                <span class="day-label">Martes</span>
-                <span class="hours-val">09:00 am - 06:00 pm</span>
-              </div>
-              <div class="schedule-row">
-                <span class="day-label">Miércoles</span>
-                <span class="hours-val">09:00 am - 06:00 pm</span>
-              </div>
-              <div class="schedule-row">
-                <span class="day-label">Jueves</span>
-                <span class="hours-val">09:00 am - 06:00 pm</span>
-              </div>
-              <div class="schedule-row">
-                <span class="day-label">Viernes</span>
-                <span class="hours-val">09:00 am - 06:00 pm</span>
-              </div>
-              <div class="schedule-row highlight-saturday">
-                <span class="day-label">Sábado</span>
-                <span class="hours-val">09:00 am - 02:00 pm</span>
-              </div>
-              <div class="schedule-row day-closed">
-                <span class="day-label">Domingo</span>
-                <span class="hours-val">Cerrado</span>
+              <div class="reel-nav-controls">
+                <div class="reel-counter-badge" id="reel-counter">
+                  <span>Unidad </span><span class="reel-current-num">1</span><span class="reel-counter-sep">/</span><span class="reel-total-num">6</span>
+                </div>
+                <div class="reel-arrows-group">
+                  <button class="reel-arrow-btn reel-arrow-prev" id="btn-reel-prev" aria-label="Regresar montacargas a la izquierda" title="Regresar a la izquierda (Anterior)">
+                    <svg class="reel-arrow-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+                  </button>
+                  <button class="reel-arrow-btn reel-arrow-next" id="btn-reel-next" aria-label="Avanzar montacargas a la derecha" title="Avanzar a la derecha (Siguiente)">
+                    <svg class="reel-arrow-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+                  </button>
+                </div>
               </div>
             </div>
 
-            <div class="workshop-action-buttons">
-              <a href="tel:+524492516028" class="btn btn-primary">
-                Llamar al Taller: (449) 251-6028
-              </a>
-              <a href="https://wa.me/524492516028?text=Hola%20CIMA,%20deseo%20visitar%20su%20taller%20en%20Av.%20Heroe%20de%20Nacozari%202206" target="_blank" rel="noopener noreferrer" class="btn btn-outline">
-                WhatsApp Directo
-              </a>
+            <!-- Escenario con flechas flotantes laterales y track horizontal -->
+            <div class="catalog-reel-stage">
+              <button class="reel-floating-arrow reel-floating-prev" id="btn-reel-float-prev" aria-label="Regresar montacargas a la izquierda" title="Regresar a la izquierda">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+              </button>
+
+              <div class="catalog-reel-track" id="catalog-container" role="region" aria-label="Carrete horizontal de montacargas">
+                <!-- Inyectado dinámicamente con flip-card 3D -->
+              </div>
+
+              <button class="reel-floating-arrow reel-floating-next" id="btn-reel-float-next" aria-label="Avanzar montacargas a la derecha" title="Avanzar a la derecha">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+              </button>
+            </div>
+
+            <div class="catalog-reel-footer">
+              <div class="reel-hint-text">
+                <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 16l-4-4m0 0l4-4m-4 4h18m-4 4l4-4m0 0l-4-4"/></svg>
+                <span>Desplaza con las flechas &bull; Haz click en cualquier tarjeta para voltearla en 3D</span>
+              </div>
+              <div class="reel-progress-track">
+                <div class="reel-progress-bar" id="reel-progress-bar"></div>
+              </div>
             </div>
           </div>
         </div>
-      </div>
       </section>
 
       <!-- PANTALLA 3: ¿QUIÉNES SOMOS? (INFORMACIÓN CORPORATIVA OFICIAL Y SERVICIOS) -->
       <section class="stacked-screen screen-quienes" id="quienes-somos" data-screen="03">
         <div class="screen-header-badge">
-          <span class="screen-counter-pill">Pantalla 03 / 07</span>
+          <span class="screen-counter-pill">Pantalla 03 / 03</span>
           <span class="screen-title-sub">Liderazgo Multi-Marca & Personal Altamente Capacitado</span>
         </div>
 
         <div class="screen-body-animated">
           <div class="two-col-grid">
-          <!-- Columna Izquierda: Texto Oficial de ¿Quiénes Somos? -->
-          <div class="col-text">
-            <div class="section-tag">Trayectoria & Soporte Multi-Marca</div>
-            <h2>¿Quiénes somos? <span>CIMA Montacargas</span></h2>
-            <p class="lead">
-              Somos una empresa líder en el sector de servicios a equipos de elevación con <strong>soporte multi-marca</strong>. Nuestras actividades cubren los rubros de <strong>renta, servicio, venta y refacciones</strong> en equipos tales como:
-            </p>
-            <ul class="official-equipment-list">
-              <li>Montacargas de combustión (Gas LP / Gasolina)</li>
-              <li>Montacargas eléctricos</li>
-              <li>Plataformas de elevación</li>
-              <li>Plataformas articuladas</li>
-              <li>Equipos de pasillo angosto (Reach Trucks)</li>
-              <li>Tractores de arrastre</li>
-            </ul>
-            <p style="color: var(--text-secondary); margin-bottom: 1.5rem; line-height: 1.7;">
-              Nuestro personal está altamente capacitado, lo que nos permite ofrecerle un <strong>servicio de calidad y rapidez con mantenimientos garantizados y equipos en excelentes condiciones</strong> que le permitan atender la necesidad en su empresa con la confianza y tranquilidad que requiere.
-            </p>
+            <!-- Columna Izquierda: Texto Oficial de ¿Quiénes Somos? -->
+            <div class="col-text">
+              <div class="section-tag">Trayectoria & Soporte Multi-Marca</div>
+              <h2>¿Quiénes somos? <span>CIMA Montacargas</span></h2>
+              <p class="lead">
+                Somos una empresa líder en el sector de servicios a equipos de elevación con <strong>soporte multi-marca</strong>. Nuestras actividades cubren los rubros de <strong>renta, servicio, venta y refacciones</strong> en equipos tales como:
+              </p>
+              <ul class="official-equipment-list">
+                <li>Montacargas de combustión (Gas LP / Gasolina)</li>
+                <li>Montacargas eléctricos</li>
+                <li>Plataformas de elevación</li>
+                <li>Plataformas articuladas</li>
+                <li>Equipos de pasillo angosto (Reach Trucks)</li>
+                <li>Tractores de arrastre</li>
+              </ul>
+              <p class="quienes-capacitacion-text">
+                Nuestro personal está altamente capacitado, lo que nos permite ofrecerle un <strong>servicio de calidad y rapidez con mantenimientos garantizados y equipos en excelentes condiciones</strong> que le permitan atender la necesidad en su empresa con la confianza y tranquilidad que requiere.
+              </p>
 
-            <div class="services-triple-grid">
-              <div class="service-pill-box">
-                <div class="service-pill-title">Renta</div>
-                <p>Contamos con el equipo ideal para cubrir tu necesidad con calidad que excede expectativas.</p>
-              </div>
-              <div class="service-pill-box">
-                <div class="service-pill-title">Refacciones</div>
-                <p>Manejamos partes multi-marca con amplio stock, entregas inmediatas y alta calidad en piezas.</p>
-              </div>
-              <div class="service-pill-box">
-                <div class="service-pill-title">Servicios Generales</div>
-                <p>Mantenimiento preventivo que reduce al mínimo los paros técnicos en tu nave.</p>
-              </div>
-            </div>
-
-            <div class="col-actions">
-              <button class="btn btn-primary" onclick="window.cimaApp.openQuoteModal('Flota General CIMA', 'Asesoría Multi-Marca')">
-                Solicitar Cotización de Servicios
-              </button>
-            </div>
-          </div>
-
-          <!-- Columna Derecha: Imagen Fotográfica Real del Equipo y Taller -->
-          <div class="col-img-frame">
-            <img src="/team-fleet.jpg" alt="Ingenieros y técnicos certificados de CIMA Montacargas" />
-            <div class="img-floating-badge">
-              <div>
-                <div class="badge-tag-txt">Taller Especializado Aguascalientes</div>
-                <div class="badge-main-txt">Equipo Técnico Calificado & Mantenimiento Garantizado</div>
-              </div>
-              <span style="font-size: 0.85rem; color: var(--green-online); font-weight: 700;">Multi-Marca</span>
-            </div>
-          </div>
-        </div>
-      </div>
-      </section>
-
-      <!-- PANTALLA 4: CATÁLOGO DE PRODUCTOS (TARJETAS 3D ESTILO CARTA QUE SE VOLTEAN AL HACER CLICK) -->
-      <section class="stacked-screen screen-catalogo" id="catalogo" data-screen="04">
-        <div class="screen-header-badge">
-          <span class="screen-counter-pill">Pantalla 04 / 07</span>
-          <span class="screen-title-sub">Catálogo Interactivo 3D Estilo Carta</span>
-        </div>
-
-        <div class="screen-body-animated">
-          <div class="section-heading-full">
-          <div class="section-tag">Flota Disponible 2026</div>
-          <h2 class="section-title">Catálogo Oficial de Montacargas <span>CIMA</span></h2>
-          <p class="section-desc">
-            Haz click sobre cualquier tarjeta para voltearla en 3D y descubrir sus especificaciones técnicas completas, cotizaciones mensuales deducibles y compatibilidad en parques de Aguascalientes.
-          </p>
-        </div>
-
-        <div class="catalog-filter-bar">
-          <button class="filter-btn active" data-filter="all">Todos los Equipos</button>
-          <button class="filter-btn" data-filter="combustion">Gas LP / Combustión</button>
-          <button class="filter-btn" data-filter="electric">Eléctricos Ion-Litio</button>
-          <button class="filter-btn" data-filter="reach">Pasillo Angosto (Reach)</button>
-          <button class="filter-btn" data-filter="diesel">Diésel Heavy Duty</button>
-        </div>
-
-        <div class="catalog-grid" id="catalog-container">
-          <!-- Inyectado dinámicamente con flip-card 3D -->
-        </div>
-      </div>
-      </section>
-
-      <!-- PANTALLA 5: CALCULADORA TÉCNICA DE CARGA Y ELEVACIÓN -->
-      <section class="stacked-screen screen-calculadora" id="calculadora" data-screen="05">
-        <div class="screen-header-badge">
-          <span class="screen-counter-pill">Pantalla 05 / 07</span>
-          <span class="screen-title-sub">Calculadora Técnica & Dimensionamiento</span>
-        </div>
-
-        <div class="screen-body-animated">
-          <div class="section-heading-full">
-          <div class="section-tag">Dimensionamiento Técnico</div>
-          <h2 class="section-title">Calculadora de Equipo para tu <span>Nave Industrial</span></h2>
-          <p class="section-desc">
-            Indica el peso de tu carga y la altura máxima de racks. El sistema selecciona el modelo adecuado para evitar sobrecostos o riesgos de estabilidad.
-          </p>
-        </div>
-
-        <div class="calc-card">
-          <div class="calc-inputs-col">
-            <div class="calc-control-group">
-              <div class="calc-label-row">
-                <label class="calc-label">Peso Máximo por Tarima (Toneladas):</label>
-                <span class="calc-value-display" id="val-display-weight">2.5 Ton</span>
-              </div>
-              <input type="range" class="calc-slider" id="slider-weight" min="1.0" max="5.0" step="0.5" value="2.5" />
-            </div>
-
-            <div class="calc-control-group">
-              <div class="calc-label-row">
-                <label class="calc-label">Altura de Estiba / Último Nivel de Rack (Metros):</label>
-                <span class="calc-value-display" id="val-display-height">4.8 Metros</span>
-              </div>
-              <input type="range" class="calc-slider" id="slider-height" min="1.5" max="8.5" step="0.5" value="4.8" />
-            </div>
-
-            <div class="calc-control-group">
-              <div class="calc-label-row">
-                <label class="calc-label">Entorno de Operación:</label>
-              </div>
-              <div class="calc-radios">
-                <div class="radio-btn active" data-env="indoor">
-                  Nave Cerrada / Piso Epóxico
+              <div class="services-triple-grid">
+                <div class="service-pill-box">
+                  <div class="service-pill-title">Renta</div>
+                  <p>Contamos con el equipo ideal para cubrir tu necesidad con calidad que excede expectativas.</p>
                 </div>
-                <div class="radio-btn" data-env="outdoor">
-                  Patio Exterior / Rampa Mixta
+                <div class="service-pill-box">
+                  <div class="service-pill-title">Refacciones</div>
+                  <p>Manejamos partes multi-marca con amplio stock, entregas inmediatas y alta calidad en piezas.</p>
+                </div>
+                <div class="service-pill-box">
+                  <div class="service-pill-title">Servicios Generales</div>
+                  <p>Mantenimiento preventivo que reduce al mínimo los paros técnicos en tu nave.</p>
                 </div>
               </div>
-            </div>
-          </div>
 
-          <div class="calc-result-box" id="calc-recommendation-box">
-            <!-- Inyectado por setupCalculator -->
-          </div>
-        </div>
-      </div>
-      </section>
-
-      <!-- PANTALLA 6: BLOG Y GUÍAS TÉCNICAS (CON REDIRECCIÓN DEDICADA) -->
-      <section class="stacked-screen screen-blog" id="blog" data-screen="06">
-        <div class="screen-header-badge">
-          <span class="screen-counter-pill">Pantalla 06 / 07</span>
-          <span class="screen-title-sub">Criterios de Decisión, ROI & Inbound</span>
-        </div>
-
-        <div class="screen-body-animated">
-          <div class="section-heading-full">
-          <div class="section-tag">Criterios de Decisión & Inbound</div>
-          <h2 class="section-title">Guías Técnicas para Directores de <span>Operaciones y Compras</span></h2>
-          <p class="section-desc">
-            Información financiera, normativa STPS y comparativas OPEX vs CAPEX para elegir el esquema más rentable en Aguascalientes. Cada guía cuenta con su propia lectura dedicada indexable.
-          </p>
-        </div>
-
-        <div class="blog-grid" id="blog-cards-grid">
-          <!-- Inyectado dinámicamente -->
-        </div>
-      </div>
-      </section>
-
-      <!-- PANTALLA 7: CONTACTO DIRECTO, INFORMACIÓN DEL LOCAL Y FORMULARIO B2B -->
-      <section class="stacked-screen screen-contacto" id="contacto" data-screen="07">
-        <div class="screen-header-badge">
-          <span class="screen-counter-pill">Pantalla 07 / 07</span>
-          <span class="screen-title-sub">Atención Inmediata en Planta & Taller</span>
-        </div>
-
-        <div class="screen-body-animated">
-          <div class="contact-grid">
-          <div class="contact-info-col">
-            <div class="section-tag">Atención Comercial Inmediata</div>
-            <h3>Información de Contacto y Taller</h3>
-            <p style="color: var(--text-secondary); margin-bottom: 1.5rem; line-height: 1.6;">
-              Visítanos directamente en nuestras instalaciones o solicita la visita de un ingeniero técnico a tu planta o nave industrial en cualquier punto de Aguascalientes.
-            </p>
-
-            <div class="contact-details-box" style="margin-bottom: 1.5rem;">
-              <div class="contact-detail-row">
-                <strong>Dirección del Taller:</strong>
-                <span>Av. Héroe de Nacozari #2206, Morelos, C.P. 20140, Aguascalientes, Ags.</span>
-              </div>
-              <div class="contact-detail-row">
-                <strong>Teléfono Directo:</strong>
-                <a href="tel:+524492516028" style="color: var(--cima-blue); font-weight: 700;">(449) 251-6028</a>
-              </div>
-              <div class="contact-detail-row">
-                <strong>Correo Electrónico:</strong>
-                <a href="mailto:ventas@cimamontacargas.com.mx" style="color: var(--blue-cima); font-weight: 700;">ventas@cimamontacargas.com.mx</a>
-              </div>
-              <div class="contact-detail-row">
-                <strong>Horario de Atención:</strong>
-                <span>Lun - Vie: 09:00 am - 06:00 pm | Sáb: 09:00 am - 02:00 pm</span>
+              <div class="col-actions">
+                <button class="btn btn-primary" onclick="window.cimaApp.openQuoteModal('Flota General CIMA', 'Asesoría Multi-Marca')">
+                  Solicitar Cotización de Servicios
+                </button>
               </div>
             </div>
 
-            <ul class="contact-perks-list">
-              <li class="contact-perk-item">
-                <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="20 6 9 17 4 12"/></svg>
-                <span>Soporte multi-marca y refacciones originales con amplio stock.</span>
-              </li>
-              <li class="contact-perk-item">
-                <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="20 6 9 17 4 12"/></svg>
-                <span>Mantenimiento preventivo garantizado para minimizar paros técnicos.</span>
-              </li>
-              <li class="contact-perk-item">
-                <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="20 6 9 17 4 12"/></svg>
-                <span>Equipos en excelentes condiciones con dictamen técnico NOM-006-STPS.</span>
-              </li>
-            </ul>
+            <!-- Columna Derecha: Imagen Fotográfica Real del Equipo y Taller -->
+            <div class="col-img-frame">
+              <img src="/team-fleet.jpg" alt="Ingenieros y técnicos certificados de CIMA Montacargas" />
+              <div class="img-floating-badge">
+                <div>
+                  <div class="badge-tag-txt">Taller Especializado Aguascalientes</div>
+                  <div class="badge-main-txt">Equipo Técnico Calificado & Mantenimiento Garantizado</div>
+                </div>
+                <span style="font-size: 0.85rem; color: var(--green-online); font-weight: 700;">Multi-Marca</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+      </div>
+    </div>
+
+    <!-- SECCIÓN 04: CALCULADORA TÉCNICA (FLUJO NATURAL SIN ANIMACIÓN GRANDE) -->
+    <section class="natural-section section-calculadora" id="calculadora">
+      <div class="container-full">
+        <div class="natural-section-card">
+          <div class="natural-section-header">
+            <span class="natural-counter-pill">Herramienta Técnica</span>
+            <span class="natural-title-sub">Calculadora de Carga y Dimensionamiento de Mástil</span>
           </div>
 
-          <div class="contact-form-col">
-            <form id="contact-direct-form" class="modal-form" style="background: var(--bg-surface-alt); padding: 2rem; border-radius: var(--radius-md); border: 1px solid var(--border-light);">
-              <div class="form-group">
-                <label for="contact-name">Nombre Completo *</label>
-                <input type="text" id="contact-name" required placeholder="Ing. Carlos Macías" />
-              </div>
-              <div class="form-row">
-                <div class="form-group">
-                  <label for="contact-company">Empresa *</label>
-                  <input type="text" id="contact-company" required placeholder="Manufacturas del Centro" />
+          <div class="natural-card-body">
+            <div class="section-heading-full">
+              <div class="section-tag">Dimensionamiento Técnico</div>
+              <h2 class="section-title">Calculadora de Equipo para tu <span>Nave Industrial</span></h2>
+              <p class="section-desc">
+                Indica el peso de tu carga y la altura máxima de racks. El sistema selecciona el modelo adecuado para evitar sobrecostos o riesgos de estabilidad.
+              </p>
+            </div>
+
+            <div class="calc-card">
+              <div class="calc-inputs-col">
+                <div class="calc-control-group">
+                  <div class="calc-label-row">
+                    <label class="calc-label">Peso Máximo por Tarima (Toneladas):</label>
+                    <span class="calc-value-display" id="val-display-weight">2.5 Ton</span>
+                  </div>
+                  <input type="range" class="calc-slider" id="slider-weight" min="1.0" max="5.0" step="0.5" value="2.5" />
                 </div>
-                <div class="form-group">
-                  <label for="contact-phone">Teléfono / WhatsApp *</label>
-                  <input type="tel" id="contact-phone" required placeholder="449 251 6028" />
+
+                <div class="calc-control-group">
+                  <div class="calc-label-row">
+                    <label class="calc-label">Altura de Estiba / Último Nivel de Rack (Metros):</label>
+                    <span class="calc-value-display" id="val-display-height">4.8 Metros</span>
+                  </div>
+                  <input type="range" class="calc-slider" id="slider-height" min="1.5" max="8.5" step="0.5" value="4.8" />
+                </div>
+
+                <div class="calc-control-group">
+                  <div class="calc-label-row">
+                    <label class="calc-label">Entorno de Operación:</label>
+                  </div>
+                  <div class="calc-radios">
+                    <div class="radio-btn active" data-env="indoor">
+                      Nave Cerrada / Piso Epóxico
+                    </div>
+                    <div class="radio-btn" data-env="outdoor">
+                      Patio Exterior / Rampa Mixta
+                    </div>
+                  </div>
                 </div>
               </div>
-              <div class="form-group">
-                <label for="contact-service">Rubro de Interés</label>
-                <select id="contact-service">
-                  <option value="Renta de Maquinaria">Renta de Montacargas y Plataformas</option>
-                  <option value="Refacciones Multi-Marca">Refacciones Multi-Marca (Piezas de reemplazo)</option>
-                  <option value="Servicios Generales y Mantenimiento">Servicios Generales (Mantenimiento preventivo/correctivo)</option>
-                  <option value="Compra de Equipo">Venta de Equipo de Elevación</option>
-                </select>
+
+              <div class="calc-result-box" id="calc-recommendation-box">
+                <!-- Inyectado por setupCalculator -->
               </div>
-              <button type="submit" class="btn btn-primary btn-block">
-                Enviar Solicitud a CIMA
-              </button>
-            </form>
+            </div>
           </div>
         </div>
       </div>
-      </section>
+    </section>
+
+    <!-- SECCIÓN 05: TALLER MATRIZ, HORARIOS Y GOOGLE MAPS (FLUJO NATURAL SIN ANIMACIÓN GRANDE) -->
+    <section class="natural-section section-cobertura" id="cobertura-industrial">
+      <div class="container-full">
+        <div class="natural-section-card">
+          <div class="natural-section-header">
+            <span class="natural-counter-pill">Taller & Ubicación</span>
+            <span class="natural-title-sub">Taller Matriz, Horarios de Atención & Google Maps</span>
+          </div>
+
+          <div class="natural-card-body">
+            <div class="two-col-grid">
+              <!-- Columna Izquierda: Mapa Interactivo de Google Maps y Ubicación del Taller -->
+              <div class="map-card-container">
+                <div class="map-card-header">
+                  <div class="map-title-row">
+                    <span class="live-pin-dot"></span>
+                    <div>
+                      <div class="map-main-title">Taller Matriz CIMA: Av. Héroe de Nacozari #2206</div>
+                      <div class="map-address-text">Col. Morelos, C.P. 20140, Aguascalientes, Ags.</div>
+                    </div>
+                  </div>
+                  <a href="https://maps.google.com/?q=Av.+Heroe+de+Nacozari+2206,+Morelos,+20140+Aguascalientes,+Ags." target="_blank" rel="noopener noreferrer" class="btn btn-outline btn-sm">
+                    <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                    Cómo Llegar en Maps
+                  </a>
+                </div>
+
+                <div class="google-maps-frame-wrap">
+                  <iframe 
+                    title="Ubicación CIMA Montacargas Av Heroe de Nacozari 2206 Aguascalientes"
+                    src="https://maps.google.com/maps?q=Av.+Heroe+de+Nacozari+2206,+Morelos,+20140+Aguascalientes,+Ags.&t=&z=16&ie=UTF8&iwloc=&output=embed"
+                    width="100%" 
+                    height="320" 
+                    style="border:0;" 
+                    allowfullscreen="" 
+                    loading="lazy" 
+                    referrerpolicy="no-referrer-when-downgrade">
+                  </iframe>
+                </div>
+
+                <div class="map-card-footer">
+                  <a href="tel:+524492516028" class="contact-pill-link">
+                    <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                    <span>(449) 251-6028</span>
+                  </a>
+                  <a href="mailto:ventas@cimamontacargas.com.mx" class="contact-pill-link">
+                    <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                    <span>ventas@cimamontacargas.com.mx</span>
+                  </a>
+                </div>
+              </div>
+
+              <!-- Columna Derecha: Tarjeta de Horarios y Atención del Taller -->
+              <div class="col-text">
+                <div class="section-tag">Visitas & Soporte Técnico</div>
+                <h2>Horarios de Atención en <span>Taller y Oficinas</span></h2>
+                
+                <div class="shop-status-badge ${shopStatus.class}" style="margin-bottom: 1.25rem;">
+                  <span class="status-indicator-dot"></span>
+                  <span>${shopStatus.text}</span>
+                </div>
+
+                <!-- Tabla de Horarios Semanales -->
+                <div class="schedule-table-card">
+                  <div class="schedule-row">
+                    <span class="day-label">Lunes</span>
+                    <span class="hours-val">09:00 am - 06:00 pm</span>
+                  </div>
+                  <div class="schedule-row">
+                    <span class="day-label">Martes</span>
+                    <span class="hours-val">09:00 am - 06:00 pm</span>
+                  </div>
+                  <div class="schedule-row">
+                    <span class="day-label">Miércoles</span>
+                    <span class="hours-val">09:00 am - 06:00 pm</span>
+                  </div>
+                  <div class="schedule-row">
+                    <span class="day-label">Jueves</span>
+                    <span class="hours-val">09:00 am - 06:00 pm</span>
+                  </div>
+                  <div class="schedule-row">
+                    <span class="day-label">Viernes</span>
+                    <span class="hours-val">09:00 am - 06:00 pm</span>
+                  </div>
+                  <div class="schedule-row highlight-saturday">
+                    <span class="day-label">Sábado</span>
+                    <span class="hours-val">09:00 am - 02:00 pm</span>
+                  </div>
+                  <div class="schedule-row day-closed">
+                    <span class="day-label">Domingo</span>
+                    <span class="hours-val">Cerrado</span>
+                  </div>
+                </div>
+
+                <div class="workshop-action-buttons">
+                  <a href="tel:+524492516028" class="btn btn-primary">
+                    Llamar al Taller: (449) 251-6028
+                  </a>
+                  <a href="https://wa.me/524492516028?text=Hola%20CIMA,%20deseo%20visitar%20su%20taller%20en%20Av.%20Heroe%20de%20Nacozari%202206" target="_blank" rel="noopener noreferrer" class="btn btn-outline">
+                    WhatsApp Directo
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECCIÓN 06: BLOG Y GUÍAS TÉCNICAS (FLUJO NATURAL) -->
+    <section class="natural-section section-blog" id="blog">
+      <div class="container-full">
+        <div class="natural-section-card">
+          <div class="natural-section-header">
+            <span class="natural-counter-pill">Inbound & Finanzas</span>
+            <span class="natural-title-sub">Criterios de Decisión, ROI & Normativa</span>
+          </div>
+
+          <div class="natural-card-body">
+            <div class="section-heading-full">
+              <div class="section-tag">Criterios de Decisión & Inbound</div>
+              <h2 class="section-title">Guías Técnicas para Directores de <span>Operaciones y Compras</span></h2>
+              <p class="section-desc">
+                Información financiera, normativa STPS y comparativas OPEX vs CAPEX para elegir el esquema más rentable en Aguascalientes. Cada guía cuenta con su propia lectura dedicada indexable.
+              </p>
+            </div>
+
+            <div class="blog-grid" id="blog-cards-grid">
+              <!-- Inyectado dinámicamente -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECCIÓN: PREGUNTAS FRECUENTES (FAQ SOBRE REQUERIMIENTOS Y SERVICIOS) -->
+    <section class="natural-section section-faq" id="faq">
+      <div class="container-full">
+        <div class="natural-section-card">
+          <div class="natural-section-header">
+            <span class="natural-counter-pill">Dudas Comunes</span>
+            <span class="natural-title-sub">Resolución de Requerimientos Operativos en el Bajío</span>
+          </div>
+
+          <div class="natural-card-body">
+            <div class="section-heading-full">
+              <div class="section-tag">Transparencia y Operación B2B</div>
+              <h2 class="section-title">Preguntas Frecuentes sobre <span>Nuestros Servicios</span></h2>
+              <p class="section-desc">
+                Todo lo que tu equipo de compras, logística y seguridad industrial necesita saber sobre contratos de arrendamiento, cobertura de mantenimiento, fletes y normativas en Aguascalientes.
+              </p>
+            </div>
+
+            <div class="faq-accordion-list" id="faq-accordion-list">
+              <!-- Pregunta 1 -->
+              <div class="faq-item" data-faq-index="1">
+                <button type="button" class="faq-question-btn" aria-expanded="false">
+                  <span class="faq-question-text">¿Cuáles son los requisitos para rentar un montacargas en Aguascalientes?</span>
+                  <span class="faq-icon-toggle">
+                    <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+                  </span>
+                </button>
+                <div class="faq-answer-panel">
+                  <div class="faq-answer-content">
+                    <p>Para personas morales y personas físicas con actividad empresarial en Aguascalientes y Bajío, los requisitos son sumamente ágiles:</p>
+                    <ul>
+                      <li><strong>Constancia de Situación Fiscal (RFC)</strong> actualizada para emitir factura 100% deducible de impuestos (OPEX).</li>
+                      <li><strong>Comprobante de domicilio</strong> de la planta, almacén o nave donde operará la unidad.</li>
+                      <li><strong>Identificación oficial</strong> del apoderado legal o responsable de compras.</li>
+                      <li><strong>Firma del contrato de arrendamiento</strong> y entrega en nave en menos de 24 horas.</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Pregunta 2 -->
+              <div class="faq-item" data-faq-index="2">
+                <button type="button" class="faq-question-btn" aria-expanded="false">
+                  <span class="faq-question-text">¿Qué incluye la tarifa de renta mensual con CIMA?</span>
+                  <span class="faq-icon-toggle">
+                    <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+                  </span>
+                </button>
+                <div class="faq-answer-panel">
+                  <div class="faq-answer-content">
+                    <p>Manejamos un esquema de arrendamiento <strong>Full Service</strong> que incluye:</p>
+                    <ul>
+                      <li><strong>Mantenimiento preventivo programado</strong> periódico (cambio de lubricantes hidráulicos, filtros, frenos y mangueras) en tus instalaciones sin costo adicional.</li>
+                      <li><strong>Refacciones de reemplazo</strong> por desgaste operativo normal incluidas.</li>
+                      <li><strong>Mano de obra certificada</strong> y soporte prioritario de mecánicos en planta.</li>
+                      <li><strong>100% Deducible de impuestos:</strong> Al ser renta pura (OPEX), no descapitaliza tu empresa ni genera activos fijos depreciables.</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Pregunta 3 -->
+              <div class="faq-item" data-faq-index="3">
+                <button type="button" class="faq-question-btn" aria-expanded="false">
+                  <span class="faq-question-text">¿Cuál es el tiempo de entrega y cobertura de fletes en parques industriales?</span>
+                  <span class="faq-icon-toggle">
+                    <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+                  </span>
+                </button>
+                <div class="faq-answer-panel">
+                  <div class="faq-answer-content">
+                    <p>Para equipos en inventario listo en nuestro taller matriz (Av. Héroe de Nacozari #2206), realizamos entrega con cama baja en <strong>el mismo día o en menos de 24 horas</strong> en:</p>
+                    <ul>
+                      <li>Parque Industrial Chichimeco (Jesús María)</li>
+                      <li>Parque Industrial San Francisco de los Romo (PISF)</li>
+                      <li>PIVA (Valle de Aguascalientes)</li>
+                      <li>PILA (Logístico de Aguascalientes) y FINSA Aeropuerto</li>
+                      <li>Santa Clara, Peñuelas, Gigante de los Arellano y corredor industrial Bajío (Silao, León, Querétaro).</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Pregunta 4 -->
+              <div class="faq-item" data-faq-index="4">
+                <button type="button" class="faq-question-btn" aria-expanded="false">
+                  <span class="faq-question-text">¿Me conviene más un montacargas de combustión (Gas LP) o eléctrico (Litio)?</span>
+                  <span class="faq-icon-toggle">
+                    <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+                  </span>
+                </button>
+                <div class="faq-answer-panel">
+                  <div class="faq-answer-content">
+                    <p>La elección óptima depende de las condiciones del área de maniobra:</p>
+                    <ul>
+                      <li><strong>Combustión Dual Gas LP:</strong> Recomendado para patios abiertos, rampas con pendiente pronunciada, descarga de contenedores y operaciones continúas 24/7 donde solo se requiere cambiar el tanque de gas en 2 minutos.</li>
+                      <li><strong>Eléctrico Litio:</strong> Indispensable para interiores cerrados, industria alimentaria, farmacéutica y automotriz limpia. Ofrece cero emisiones de CO2, operación silenciosa y bajo costo operativo por ciclo de carga.</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Pregunta 5 -->
+              <div class="faq-item" data-faq-index="5">
+                <button type="button" class="faq-question-btn" aria-expanded="false">
+                  <span class="faq-question-text">¿Los equipos cumplen con las normativas de seguridad de la STPS (NOM-006)?</span>
+                  <span class="faq-icon-toggle">
+                    <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+                  </span>
+                </button>
+                <div class="faq-answer-panel">
+                  <div class="faq-answer-content">
+                    <p>Totalmente. Toda nuestra maquinaria cumple con los estándares de la <strong>NOM-006-STPS-2014</strong> (Manejo y almacenamiento de materiales - condiciones de seguridad y salud en el trabajo). Se entregan equipados con:</p>
+                    <ul>
+                      <li>Torreta estroboscópica ámbar y alarma audible de reversa.</li>
+                      <li>Cinturón de seguridad de alta visibilidad y switch de presencia de operador.</li>
+                      <li>Extintor tipo ABC vigente, claxon y espejos retrovisores.</li>
+                      <li>Bitácora técnica de inspección y mantenimiento preventivo al día.</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Pregunta 6 -->
+              <div class="faq-item" data-faq-index="6">
+                <button type="button" class="faq-question-btn" aria-expanded="false">
+                  <span class="faq-question-text">¿Manejan refacciones y servicio técnico para cualquier marca de montacargas?</span>
+                  <span class="faq-icon-toggle">
+                    <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+                  </span>
+                </button>
+                <div class="faq-answer-panel">
+                  <div class="faq-answer-content">
+                    <p>Sí. Nuestro taller matriz y equipo técnico cuentan con soporte multi-marca para:</p>
+                    <p><strong>Toyota, Hyster, Yale, Crown, Clark, Mitsubishi, Nissan / UniCarriers, Caterpillar y Komatsu.</strong> Disponemos de amplio stock de piezas de reemplazo y entregas inmediatas en Aguascalientes.</p>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Pregunta 7 -->
+              <div class="faq-item" data-faq-index="7">
+                <button type="button" class="faq-question-btn" aria-expanded="false">
+                  <span class="faq-question-text">¿Qué sucede si un equipo rentado requiere reparación correctiva en planta?</span>
+                  <span class="faq-icon-toggle">
+                    <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+                  </span>
+                </button>
+                <div class="faq-answer-panel">
+                  <div class="faq-answer-content">
+                    <p>Nuestra cuadrilla móvil de mecánicos acude directamente a tu nave con herramienta especializada. Si la intervención correctiva toma más de 24 horas, <strong>te suministramos un equipo de respaldo de similar capacidad sin costo extra</strong> para proteger tu continuidad operativa y tus embarques.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECCIÓN 08: CONTACTO DIRECTO Y FORMULARIO B2B (FLUJO NATURAL SIN ANIMACIÓN GRANDE) -->
+    <section class="natural-section section-contacto" id="contacto">
+      <div class="container-full">
+        <div class="natural-section-card">
+          <div class="natural-section-header">
+            <span class="natural-counter-pill">Atención al Cliente</span>
+            <span class="natural-title-sub">Atención Inmediata en Planta & Taller</span>
+          </div>
+
+          <div class="natural-card-body">
+            <div class="contact-grid">
+              <div class="contact-info-col">
+                <div class="section-tag">Atención Comercial Inmediata</div>
+                <h3>Información de Contacto y Taller</h3>
+                <p style="color: var(--text-secondary); margin-bottom: 1.5rem; line-height: 1.6;">
+                  Visítanos directamente en nuestras instalaciones o solicita la visita de un ingeniero técnico a tu planta o nave industrial en cualquier punto de Aguascalientes.
+                </p>
+
+                <div class="contact-details-box" style="margin-bottom: 1.5rem;">
+                  <div class="contact-detail-row">
+                    <strong>Dirección del Taller:</strong>
+                    <span>Av. Héroe de Nacozari #2206, Morelos, C.P. 20140, Aguascalientes, Ags.</span>
+                  </div>
+                  <div class="contact-detail-row">
+                    <strong>Teléfono Directo:</strong>
+                    <a href="tel:+524492516028" style="color: var(--cima-blue); font-weight: 700;">(449) 251-6028</a>
+                  </div>
+                  <div class="contact-detail-row">
+                    <strong>Correo Electrónico:</strong>
+                    <a href="mailto:ventas@cimamontacargas.com.mx" style="color: var(--blue-cima); font-weight: 700;">ventas@cimamontacargas.com.mx</a>
+                  </div>
+                  <div class="contact-detail-row">
+                    <strong>Horario de Atención:</strong>
+                    <span>Lun - Vie: 09:00 am - 06:00 pm | Sáb: 09:00 am - 02:00 pm</span>
+                  </div>
+                </div>
+
+                <!-- Apartado de Redes Sociales Oficiales (Facebook & Instagram) -->
+                <div class="social-channels-card" style="margin-bottom: 1.5rem;">
+                  <div class="social-channels-header">
+                    <strong>Canales Digitales Oficiales</strong>
+                    <span style="font-size: 0.8rem; color: var(--text-muted);">Conoce nuestros equipos y entregas en nave</span>
+                  </div>
+                  <div class="social-buttons-grid">
+                    <a href="https://www.facebook.com/cimamontacargasaguascalientes/?locale=es_LA" target="_blank" rel="noopener noreferrer" class="social-channel-btn btn-facebook">
+                      <div class="social-btn-icon fb-icon">
+                        <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+                      </div>
+                      <div class="social-btn-meta">
+                        <span class="social-name">Facebook Oficial CIMA</span>
+                        <span class="social-sub">cimamontacargasaguascalientes</span>
+                      </div>
+                      <span class="social-arrow">&rarr;</span>
+                    </a>
+
+                    <a href="https://www.instagram.com/cima_montacargas" target="_blank" rel="noopener noreferrer" class="social-channel-btn btn-instagram" title="Próximamente / Configurable">
+                      <div class="social-btn-icon ig-icon">
+                        <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+                      </div>
+                      <div class="social-btn-meta">
+                        <span class="social-name">Instagram Oficial CIMA</span>
+                        <span class="social-sub">@cima_montacargas (Próximamente)</span>
+                      </div>
+                      <span class="social-arrow">&rarr;</span>
+                    </a>
+                  </div>
+                </div>
+
+                <ul class="contact-perks-list">
+                  <li class="contact-perk-item">
+                    <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="20 6 9 17 4 12"/></svg>
+                    <span>Soporte multi-marca y refacciones originales con amplio stock.</span>
+                  </li>
+                  <li class="contact-perk-item">
+                    <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="20 6 9 17 4 12"/></svg>
+                    <span>Mantenimiento preventivo garantizado para minimizar paros técnicos.</span>
+                  </li>
+                  <li class="contact-perk-item">
+                    <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="20 6 9 17 4 12"/></svg>
+                    <span>Equipos en excelentes condiciones con dictamen técnico NOM-006-STPS.</span>
+                  </li>
+                </ul>
+              </div>
+
+              <div class="contact-form-col">
+                <form id="contact-direct-form" class="modal-form" style="background: var(--bg-surface-alt); padding: 2rem; border-radius: var(--radius-md); border: 1px solid var(--border-light);">
+                  <div class="form-group">
+                    <label for="contact-name">Nombre Completo *</label>
+                    <input type="text" id="contact-name" required placeholder="Ing. Carlos Macías" />
+                  </div>
+                  <div class="form-row">
+                    <div class="form-group">
+                      <label for="contact-company">Empresa *</label>
+                      <input type="text" id="contact-company" required placeholder="Manufacturas del Centro" />
+                    </div>
+                    <div class="form-group">
+                      <label for="contact-phone">Teléfono / WhatsApp *</label>
+                      <input type="tel" id="contact-phone" required placeholder="449 251 6028" />
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label for="contact-service">Rubro de Interés</label>
+                    <select id="contact-service">
+                      <option value="Renta de Maquinaria">Renta de Montacargas y Plataformas</option>
+                      <option value="Refacciones Multi-Marca">Refacciones Multi-Marca (Piezas de reemplazo)</option>
+                      <option value="Servicios Generales y Mantenimiento">Servicios Generales (Mantenimiento preventivo/correctivo)</option>
+                      <option value="Compra de Equipo">Venta de Equipo de Elevación</option>
+                    </select>
+                  </div>
+
+                  <!-- Aceptación obligatoria del Aviso de Privacidad -->
+                  <div class="form-group form-privacy-group" style="margin-top: 1rem; margin-bottom: 1.25rem;">
+                    <label class="privacy-checkbox-label">
+                      <input type="checkbox" id="contact-privacy" required />
+                      <span class="privacy-label-text">
+                        He leído y acepto el <button type="button" class="btn-text-privacy trigger-privacy-modal">Aviso de Privacidad</button> y autorizo el uso de mis datos para la atención técnica conforme a la LFPDPPP. *
+                      </span>
+                    </label>
+                  </div>
+
+                  <button type="submit" class="btn btn-primary btn-block">
+                    Enviar Solicitud a CIMA
+                  </button>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
       </div>
     </div>
 
@@ -646,6 +910,7 @@ function renderMainScreens() {
             <li><a href="#quienes-somos">Refacciones Multi-Marca</a></li>
             <li><a href="#quienes-somos">Servicios Generales</a></li>
             <li><a href="#catalogo">Montacargas y Plataformas</a></li>
+            <li><a href="#faq">Preguntas Frecuentes</a></li>
           </ul>
         </div>
 
@@ -660,18 +925,30 @@ function renderMainScreens() {
         </div>
 
         <div class="footer-col">
-          <h5>Contacto Matriz</h5>
+          <h5>Redes y Legal</h5>
           <ul class="footer-links">
+            <li>
+              <a href="https://www.facebook.com/cimamontacargasaguascalientes/?locale=es_LA" target="_blank" rel="noopener noreferrer" class="footer-social-link fb-link">
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+                <span>Facebook Oficial</span>
+              </a>
+            </li>
+            <li>
+              <a href="https://www.instagram.com/cima_montacargas" target="_blank" rel="noopener noreferrer" class="footer-social-link ig-link">
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+                <span>Instagram Oficial</span>
+              </a>
+            </li>
+            <li><button type="button" class="btn-text-privacy trigger-privacy-modal" style="color: var(--text-muted); font-size: 0.88rem; text-decoration: underline; background: none; border: none; padding: 0; cursor: pointer; text-align: left;">Aviso de Privacidad (LFPDPPP)</button></li>
+            <li><button type="button" class="btn-text-privacy trigger-cookies-preferences" style="color: var(--text-muted); font-size: 0.88rem; text-decoration: underline; background: none; border: none; padding: 0; cursor: pointer; text-align: left;">Configuración de Cookies</button></li>
             <li><a href="tel:+524492516028">Tel: (449) 251-6028</a></li>
-            <li><a href="mailto:ventas@cimamontacargas.com.mx">ventas@cimamontacargas.com.mx</a></li>
-            <li>Av. Héroe de Nacozari #2206, Morelos, Ags.</li>
-            <li><a href="#" id="footer-wa-link" style="color: #25d366; font-weight: 700;">Línea WhatsApp Directa</a></li>
+            <li><a href="#" id="footer-wa-link" style="color: #25d366; font-weight: 700;">WhatsApp Directo</a></li>
           </ul>
         </div>
       </div>
 
       <div class="container-full footer-bottom">
-        <div>&copy; 2026 CIMA Montacargas. Todos los derechos reservados.</div>
+        <div>&copy; 2026 CIMA Montacargas Aguascalientes. Todos los derechos reservados. &bull; <button type="button" class="btn-text-privacy trigger-privacy-modal" style="color: var(--text-muted); text-decoration: underline; background: none; border: none; padding: 0; cursor: pointer; font-size: inherit;">Aviso de Privacidad</button> &bull; <button type="button" class="btn-text-privacy trigger-cookies-preferences" style="color: var(--text-muted); text-decoration: underline; background: none; border: none; padding: 0; cursor: pointer; font-size: inherit;">Cookies</button></div>
         <div>Av. Héroe de Nacozari #2206, Morelos, 20140 Aguascalientes, Ags. &bull; Tel: (449) 251-6028</div>
       </div>
     </footer>
@@ -770,6 +1047,7 @@ function initMainInteractiveComponents() {
   setupCatalog();
   setupCalculator();
   setupBlog();
+  setupFAQ();
   setupScrollCardDeck();
   setupAllHoverBorderTraces();
   setupMobileMenu();
@@ -789,11 +1067,65 @@ function setupParallaxStage() {
   });
 }
 
-// Configurar catálogo con animación estilo carta (3D Flip Card al hacer click)
+// Configurar catálogo en carrete horizontal (Reel) con navegación por flechas y flip card 3D
 function setupCatalog() {
   const container = document.getElementById('catalog-container');
   const filterBtns = document.querySelectorAll('.filter-btn');
+  const prevBtn = document.getElementById('btn-reel-prev');
+  const nextBtn = document.getElementById('btn-reel-next');
+  const floatPrevBtn = document.getElementById('btn-reel-float-prev');
+  const floatNextBtn = document.getElementById('btn-reel-float-next');
+  const progressBar = document.getElementById('reel-progress-bar');
   if (!container) return;
+
+  function updateReelControls() {
+    const scrollLeft = container.scrollLeft;
+    const maxScroll = Math.max(0, container.scrollWidth - container.clientWidth);
+    const isAtStart = scrollLeft <= 8;
+    const isAtEnd = scrollLeft >= maxScroll - 8;
+
+    if (prevBtn) prevBtn.disabled = isAtStart;
+    if (floatPrevBtn) floatPrevBtn.disabled = isAtStart;
+    if (nextBtn) nextBtn.disabled = isAtEnd;
+    if (floatNextBtn) floatNextBtn.disabled = isAtEnd;
+
+    // Calcular índice actual para el contador
+    const cards = container.querySelectorAll('.product-flip-card');
+    const total = cards.length;
+    const firstCard = cards[0];
+    const stride = firstCard ? (firstCard.offsetWidth + 24) : 374;
+    const current = Math.min(total, Math.max(1, Math.round(scrollLeft / stride) + 1));
+
+    const curNum = document.querySelector('.reel-current-num');
+    const totNum = document.querySelector('.reel-total-num');
+    if (curNum) curNum.textContent = current;
+    if (totNum) totNum.textContent = total;
+
+    if (progressBar && maxScroll > 0) {
+      const pct = Math.min(100, Math.max(0, (scrollLeft / maxScroll) * 100));
+      progressBar.style.width = `${pct}%`;
+    }
+  }
+
+  function scrollReel(direction) {
+    const cards = container.querySelectorAll('.product-flip-card');
+    if (!cards.length) return;
+    const firstCard = cards[0];
+    const stride = firstCard.offsetWidth + 24; // ancho tarjeta + gap
+    container.scrollBy({
+      left: direction * stride,
+      behavior: 'smooth'
+    });
+    pixel.recordEvent('CatalogReelScroll', { direction: direction > 0 ? 'next' : 'prev' });
+  }
+
+  prevBtn?.addEventListener('click', () => scrollReel(-1));
+  floatPrevBtn?.addEventListener('click', () => scrollReel(-1));
+  nextBtn?.addEventListener('click', () => scrollReel(1));
+  floatNextBtn?.addEventListener('click', () => scrollReel(1));
+
+  container.addEventListener('scroll', updateReelControls, { passive: true });
+  window.addEventListener('resize', updateReelControls, { passive: true });
 
   function renderList(category = 'all') {
     const filtered = category === 'all'
@@ -931,6 +1263,10 @@ function setupCatalog() {
         card?.classList.remove('is-flipped');
       });
     });
+
+    container.scrollLeft = 0;
+    setupAllHoverBorderTraces();
+    setTimeout(updateReelControls, 50);
   }
 
   // Filtrado
@@ -1012,12 +1348,20 @@ function setupCalculator() {
   sliderWeight?.addEventListener('input', update);
   sliderHeight?.addEventListener('input', update);
 
+  sliderWeight?.addEventListener('change', () => {
+    pixel.recordEvent('CalculatorDimension', { weightTons: sliderWeight.value, heightMeters: sliderHeight?.value, env: currentEnv });
+  });
+  sliderHeight?.addEventListener('change', () => {
+    pixel.recordEvent('CalculatorDimension', { weightTons: sliderWeight?.value, heightMeters: sliderHeight.value, env: currentEnv });
+  });
+
   radioBtns.forEach(btn => {
     btn.addEventListener('click', () => {
       radioBtns.forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
       currentEnv = btn.getAttribute('data-env');
       update();
+      pixel.recordEvent('CalculatorEnvChange', { env: currentEnv });
     });
   });
 
@@ -1050,11 +1394,9 @@ function setupBlog() {
   `).join('');
 }
 
-// Inyectar animación de borde perimetral en sentido horario (delgado, nítido y sin difuminado) en todas las tarjetas
+// Inyectar animación de borde perimetral en sentido horario EXCLUSIVAMENTE en las tarjetas del catálogo
 function setupAllHoverBorderTraces() {
-  const cards = document.querySelectorAll(
-    '.parallax-stage-card, .product-flip-card, .service-pill-box, .blog-card, .feature-item, .calc-card, .map-card-container, .schedule-table-card, .contact-details-box'
-  );
+  const cards = document.querySelectorAll('.product-flip-card');
   cards.forEach(card => {
     if (!card.querySelector('.border-trace-svg')) {
       const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
@@ -1079,8 +1421,6 @@ function setupAllHoverBorderTraces() {
     }
   });
 }
-
-let mobileMenuInitialized = false;
 
 // Configurar menú móvil desplegable
 function setupMobileMenu() {
@@ -1143,10 +1483,8 @@ function setupMobileMenu() {
   });
 }
 
-// Configurar animación de reveal apilado (Deck-of-Cards Screen Reveal al hacer Scroll)
-// Configurar animación de reveal apilado (Top-Card Slide-Up Reveal)
-// "Lo que se mueve es la parte de arriba hacia arriba y por consecuencia lo de abajo aparece de forma natural"
-// "Las letras de abajo comienzan con un blur alto y son más pequeñas, y a la mitad del desplazamiento queda sin blur y normal"
+// Configurar animación apilada (Top-Card Slide-Up Reveal) con física de scroll 100% natural
+// y mesetas de estancia extendida ("scrollear de más" / hold plateaus) sin bloquear la rueda del mouse.
 function setupScrollCardDeck() {
   const wrapper = document.getElementById('screens-stack-wrapper');
   const deckViewport = document.getElementById('screens-deck-viewport');
@@ -1154,7 +1492,40 @@ function setupScrollCardDeck() {
   if (!wrapper || !screens.length) return;
 
   let isTicking = false;
+  const N = screens.length; // 3 pantallas: #inicio, #catalogo, #quienes-somos
 
+  // Dimensiones dinámicas basadas en el viewport
+  function getDeckMetrics() {
+    const windowH = window.innerHeight;
+    // HOLD_DISTANCE: Distancia de scroll extra ("scrollear de más") donde la pantalla se queda 100% quieta y centrada
+    const holdDist = Math.max(520, Math.round(windowH * 0.85));
+    // TRANSITION_DISTANCE: Distancia de scroll durante la cual la tarjeta superior sube suavemente a -105%
+    const transDist = Math.max(580, Math.round(windowH * 0.95));
+    // Total de desplazamiento requerido dentro del deck apilado
+    const totalDeckScroll = (N * holdDist) + ((N - 1) * transDist);
+    return { windowH, holdDist, transDist, totalDeckScroll };
+  }
+
+  // Smoothstep easing cúbico para inicio y fin de transición ultra suaves
+  function smoothstep(t) {
+    const c = Math.min(1, Math.max(0, t));
+    return c * c * (3 - 2 * c);
+  }
+
+  // Actualizar enlaces activos en la barra de navegación
+  function setActiveNavLink(activeId) {
+    if (!activeId) return;
+    document.querySelectorAll('.nav-link').forEach(link => {
+      const linkHref = link.getAttribute('href')?.replace('#', '');
+      link.classList.toggle('active', linkHref === activeId);
+    });
+    document.querySelectorAll('.m-link').forEach(link => {
+      const linkHref = link.getAttribute('href')?.replace('#', '');
+      link.classList.toggle('active', linkHref === activeId);
+    });
+  }
+
+  // Navegación suave a pantalla o sección
   window.scrollToScreen = function(screenId) {
     const isMobile = window.innerWidth <= 900;
     const targetId = screenId.replace('#', '');
@@ -1168,17 +1539,20 @@ function setupScrollCardDeck() {
 
     const targetIndex = screens.findIndex(s => s.id === targetId);
     if (targetIndex >= 0) {
-      const windowH = window.innerHeight;
-      const stepHeight = windowH * 1.15;
-      const wrapperTop = wrapper.offsetTop;
-      const targetScroll = wrapperTop + (targetIndex * stepHeight) + 4;
+      const { holdDist, transDist } = getDeckMetrics();
+      const wrapperTopInDoc = wrapper.offsetTop;
+      const baseOffset = Math.max(0, wrapperTopInDoc - 76);
+      // Aterriza exactamente al inicio de la meseta de estancia (hold) de esa pantalla, 100% visible
+      const targetScroll = baseOffset + (targetIndex * (holdDist + transDist));
       window.scrollTo({ top: targetScroll, behavior: 'smooth' });
     } else {
-      targetEl.scrollIntoView({ behavior: 'smooth' });
+      const headerOffset = 76;
+      const targetTop = targetEl.getBoundingClientRect().top + window.scrollY - headerOffset;
+      window.scrollTo({ top: targetTop, behavior: 'smooth' });
     }
   };
 
-  // Asignar navegación suave a todos los enlaces de ancla
+  // Interceptar clicks en enlaces de ancla para usar scrollToScreen
   document.querySelectorAll('a[href^="#"]').forEach(link => {
     link.addEventListener('click', (e) => {
       const href = link.getAttribute('href');
@@ -1192,13 +1566,13 @@ function setupScrollCardDeck() {
     });
   });
 
+  // Física de scroll 100% pura, sin interceptar la rueda ni congelar el navegador
   function updateScrollPhysics() {
     const isMobile = window.innerWidth <= 900;
     const windowH = window.innerHeight;
 
     if (isMobile) {
       wrapper.style.minHeight = 'auto';
-      // En celulares: flujo natural a 60 FPS sin sticky ni bloqueos de GPU
       screens.forEach((screen) => {
         const rect = screen.getBoundingClientRect();
         if (rect.top < windowH * 0.92) {
@@ -1213,81 +1587,107 @@ function setupScrollCardDeck() {
       return;
     }
 
-    // MODO DESKTOP:
-    // Altura por transición de pantalla
-    const stepHeight = windowH * 1.15;
-    const totalTransitions = screens.length - 1;
-    wrapper.style.minHeight = `${totalTransitions * stepHeight + windowH}px`;
+    // MODO DESKTOP / PC:
+    const { holdDist, transDist, totalDeckScroll } = getDeckMetrics();
+    // Altura del wrapper: distancia del deck más 1 viewport para permitir salida natural
+    wrapper.style.minHeight = `${totalDeckScroll + windowH}px`;
 
-    const wrapperRect = wrapper.getBoundingClientRect();
-    const scrollInside = Math.max(0, -wrapperRect.top);
+    const wrapperTopInDoc = wrapper.offsetTop;
+    const baseOffset = Math.max(0, wrapperTopInDoc - 76);
+    const scrollInside = Math.max(0, window.scrollY - baseOffset);
 
-    // Calcular índice activo para el navbar
-    const activeIndex = Math.min(screens.length - 1, Math.floor((scrollInside + (stepHeight * 0.4)) / stepHeight));
-    const activeScreenId = screens[activeIndex]?.id;
-    if (activeScreenId) {
-      document.querySelectorAll('.nav-link').forEach(link => {
-        const linkHref = link.getAttribute('href')?.replace('#', '');
-        link.classList.toggle('active', linkHref === activeScreenId);
-      });
-    }
+    // Calcular estado de cada pantalla según la línea de tiempo:
+    // Para cada pantalla i:
+    //   Llegada A_i = i * (holdDist + transDist)
+    //   Meseta de estancia (HOLD): [A_i, A_i + holdDist] -> Se queda centrada al 100% ("scrollear de más")
+    //   Transición hacia arriba: [A_i + holdDist, A_i + holdDist + transDist] -> Se desliza a -105%
+    //   Completada: > A_i + holdDist + transDist -> Oculta arriba (-105%)
 
-    screens.forEach((screen, index) => {
-      // Estado inicial de la pantalla 01
-      if (index === 0 && scrollInside <= 5) {
-        screen.style.setProperty('--screen-slide-up', '0%');
-        screen.style.setProperty('--reveal-blur', '0px');
-        screen.style.setProperty('--reveal-scale', '1');
-        screen.style.setProperty('--reveal-opacity', '1');
-      }
+    for (let i = 0; i < N; i++) {
+      const screen = screens[i];
+      const arrival = i * (holdDist + transDist);
+      const holdEnd = arrival + holdDist;
+      const transitionEnd = holdEnd + transDist;
 
-      if (index < totalTransitions) {
-        const start = index * stepHeight;
-        const end = (index + 1) * stepHeight;
-
-        if (scrollInside <= start) {
-          // La pantalla está en posición inicial visible (0%)
+      if (i < N - 1) {
+        // Pantallas con transición hacia arriba (Pantalla 01 y 02)
+        if (scrollInside <= holdEnd) {
+          // Dentro de su meseta de estancia (HOLD PLATEAU):
           screen.style.setProperty('--screen-slide-up', '0%');
-        } else if (scrollInside < end) {
-          // La pantalla de ARRIBA se desplaza hacia ARRIBA (-105%)
-          const progress = (scrollInside - start) / stepHeight;
-          const slidePercent = progress * 105;
+        } else if (scrollInside < transitionEnd) {
+          // ZONA DE TRANSICIÓN ACTIVA Y PROGRESIVA:
+          const p = (scrollInside - holdEnd) / transDist;
+          const eased = smoothstep(p);
+          const slidePercent = eased * 105;
           screen.style.setProperty('--screen-slide-up', `-${slidePercent.toFixed(2)}%`);
 
-          // La pantalla de ABAJO aparece de forma natural con blur y scale decrecientes
-          const nextScreen = screens[index + 1];
+          // Revelar la pantalla siguiente (i + 1)
+          const nextScreen = screens[i + 1];
           if (nextScreen) {
             nextScreen.style.setProperty('--screen-slide-up', '0%');
-            if (progress <= 0.5) {
-              // De 0% a 50% del desplazamiento: blur disminuye de 16px a 0px y letras crecen a tamaño normal
-              const p = progress / 0.5;
-              const blur = (1 - p) * 16;
-              const scale = 0.90 + (0.10 * p);
-              const opacity = 0.35 + (0.65 * p);
-              nextScreen.style.setProperty('--reveal-blur', `${blur.toFixed(1)}px`);
-              nextScreen.style.setProperty('--reveal-scale', `${scale.toFixed(3)}`);
-              nextScreen.style.setProperty('--reveal-opacity', `${opacity.toFixed(2)}`);
-            } else {
-              // A partir del 50% del desplazamiento total: 100% nítido sin blur y letras en tamaño original
-              nextScreen.style.setProperty('--reveal-blur', '0px');
-              nextScreen.style.setProperty('--reveal-scale', '1');
-              nextScreen.style.setProperty('--reveal-opacity', '1');
-            }
+            // Logra máxima nitidez y escala antes de terminar la transición total
+            const revealP = Math.min(1, eased / 0.75);
+            const blur = (1 - revealP) * 14;
+            const scale = 0.92 + (0.08 * revealP);
+            const opacity = 0.35 + (0.65 * revealP);
+            nextScreen.style.setProperty('--reveal-blur', `${blur.toFixed(1)}px`);
+            nextScreen.style.setProperty('--reveal-scale', `${scale.toFixed(3)}`);
+            nextScreen.style.setProperty('--reveal-opacity', `${opacity.toFixed(2)}`);
           }
         } else {
-          // Ya terminó de subir: queda oculta arriba (-105%)
+          // Ya terminó de subir: se queda arriba (-105%)
           screen.style.setProperty('--screen-slide-up', '-105%');
+        }
+      } else {
+        // Última pantalla apilada (Pantalla 03 / Quiénes somos):
+        // Siempre se queda en 0%, y cuando scrollInside >= arrival se muestra al 100%
+        screen.style.setProperty('--screen-slide-up', '0%');
+        if (scrollInside >= arrival) {
+          screen.style.setProperty('--reveal-blur', '0px');
+          screen.style.setProperty('--reveal-scale', '1');
+          screen.style.setProperty('--reveal-opacity', '1');
         }
       }
 
-      // Preparar pantallas posteriores que aún no entran
-      if (index > activeIndex + 1) {
-        screen.style.setProperty('--screen-slide-up', '0%');
-        screen.style.setProperty('--reveal-blur', '16px');
-        screen.style.setProperty('--reveal-scale', '0.90');
-        screen.style.setProperty('--reveal-opacity', '0.35');
+      // Inicializar pantallas posteriores que aún no entran a la zona de revelación
+      const nextIndex = i + 1;
+      if (nextIndex < N && scrollInside < arrival + holdDist) {
+        const futureScreen = screens[nextIndex];
+        futureScreen.style.setProperty('--screen-slide-up', '0%');
+        futureScreen.style.setProperty('--reveal-blur', '14px');
+        futureScreen.style.setProperty('--reveal-scale', '0.92');
+        futureScreen.style.setProperty('--reveal-opacity', '0.35');
       }
-    });
+    }
+
+    // Actualizar sección activa en el menú de navegación
+    const A1 = holdDist + transDist;
+    const A2 = 2 * (holdDist + transDist);
+
+    if (scrollInside < A1 - (transDist * 0.25)) {
+      setActiveNavLink('inicio');
+    } else if (scrollInside < A2 - (transDist * 0.25)) {
+      setActiveNavLink('catalogo');
+    } else if (scrollInside < totalDeckScroll + 100) {
+      setActiveNavLink('quienes-somos');
+    } else {
+      // Secciones posteriores de flujo natural (Calculadora, Blog, Cobertura, Contacto)
+      const naturalSections = ['calculadora', 'cobertura-industrial', 'blog', 'faq', 'contacto'];
+      let matchedSection = null;
+      for (const secId of naturalSections) {
+        const el = document.getElementById(secId);
+        if (el) {
+          const rect = el.getBoundingClientRect();
+          if (rect.top <= 200 && rect.bottom >= 100) {
+            matchedSection = secId;
+            break;
+          }
+        }
+      }
+      if (matchedSection) {
+        setActiveNavLink(matchedSection);
+      }
+    }
 
     isTicking = false;
   }
@@ -1299,6 +1699,7 @@ function setupScrollCardDeck() {
     }
   }
 
+  // Listeners de scroll y resize pasivos: CERO BLOQUEO, rendimiento nativo a 60-120 FPS
   window.addEventListener('scroll', onScroll, { passive: true });
   window.addEventListener('resize', onScroll, { passive: true });
   updateScrollPhysics();
@@ -1384,13 +1785,21 @@ function setupModalAndLeadForm() {
 
   form?.addEventListener('submit', (e) => {
     e.preventDefault();
+    const privacyCheck = document.getElementById('lead-privacy');
+    if (privacyCheck && !privacyCheck.checked) {
+      alert('Por favor, acepta el Aviso de Privacidad para continuar con tu cotización.');
+      privacyCheck.focus();
+      return;
+    }
+
     const formData = {
       name: document.getElementById('lead-name').value.trim(),
       company: document.getElementById('lead-company').value.trim(),
       phone: document.getElementById('lead-phone').value.trim(),
       park: document.getElementById('lead-park').value,
       modality: document.getElementById('lead-modality').value,
-      model: inputModel.value
+      model: inputModel.value,
+      privacyAccepted: true
     };
 
     pixel.trackLead(formData);
@@ -1436,12 +1845,20 @@ function setupModalAndLeadForm() {
 
   contactDirectForm?.addEventListener('submit', (e) => {
     e.preventDefault();
+    const privacyCheck = document.getElementById('contact-privacy');
+    if (privacyCheck && !privacyCheck.checked) {
+      alert('Por favor, acepta el Aviso de Privacidad para enviar tu solicitud.');
+      privacyCheck.focus();
+      return;
+    }
+
     const formData = {
       name: document.getElementById('contact-name').value.trim(),
       company: document.getElementById('contact-company').value.trim(),
       phone: document.getElementById('contact-phone').value.trim(),
       modality: document.getElementById('contact-service').value,
-      model: 'General_Quote_Direct'
+      model: 'General_Quote_Direct',
+      privacyAccepted: true
     };
 
     pixel.trackLead(formData);
@@ -1524,10 +1941,264 @@ function setupWhatsAppIntegration() {
   });
 }
 
+// Configurar acordeón interactivo de Preguntas Frecuentes (FAQ)
+function setupFAQ() {
+  const faqItems = document.querySelectorAll('.faq-item');
+  if (!faqItems.length) return;
+
+  faqItems.forEach(item => {
+    const btn = item.querySelector('.faq-question-btn');
+    const answer = item.querySelector('.faq-answer-panel');
+    if (!btn || !answer) return;
+
+    btn.addEventListener('click', () => {
+      const isAlreadyOpen = item.classList.contains('active');
+      const questionText = item.querySelector('.faq-question-text')?.textContent.trim() || '';
+
+      // Cerrar otros acordeones para mantener orden y foco
+      faqItems.forEach(other => {
+        if (other !== item) {
+          other.classList.remove('active');
+          other.querySelector('.faq-question-btn')?.setAttribute('aria-expanded', 'false');
+          const otherAns = other.querySelector('.faq-answer-panel');
+          if (otherAns) otherAns.style.maxHeight = null;
+        }
+      });
+
+      if (isAlreadyOpen) {
+        item.classList.remove('active');
+        btn.setAttribute('aria-expanded', 'false');
+        answer.style.maxHeight = null;
+        pixel.recordEvent('FAQ_Toggle', { question: questionText, action: 'close' });
+      } else {
+        item.classList.add('active');
+        btn.setAttribute('aria-expanded', 'true');
+        answer.style.maxHeight = answer.scrollHeight + 35 + 'px';
+        pixel.recordEvent('FAQ_Toggle', { question: questionText, action: 'open' });
+      }
+    });
+  });
+}
+
+// Configurar banner de consentimiento de Cookies y Centro de Preferencias (Cumplimiento LFPDPPP)
+function setupCookieConsent() {
+  if (cookieConsentInitialized) return;
+  cookieConsentInitialized = true;
+
+  const banner = document.getElementById('cookie-consent-banner');
+  const btnAccept = document.getElementById('btn-cookie-accept');
+  const btnEssential = document.getElementById('btn-cookie-essential');
+  const btnPreferences = document.getElementById('btn-cookie-preferences');
+
+  const prefModal = document.getElementById('cookie-preferences-modal');
+  const btnPrefClose = document.getElementById('btn-cookie-pref-close');
+  const btnSavePrefs = document.getElementById('btn-cookie-save-prefs');
+  const btnRejectOptional = document.getElementById('btn-cookie-reject-optional');
+  const chkAnalytics = document.getElementById('pref-cookie-analytics');
+  const chkMarketing = document.getElementById('pref-cookie-marketing');
+
+  if (!banner) return;
+
+  const currentConsent = pixel.getConsent();
+
+  // Si no ha respondido al banner, mostrarlo con animación
+  if (!currentConsent.prompted) {
+    setTimeout(() => {
+      banner.style.display = 'block';
+      requestAnimationFrame(() => {
+        banner.classList.add('visible');
+      });
+      pixel.recordEvent('CookieBannerShown', { status: 'prompted' });
+    }, 1200);
+  }
+
+  function dismissBanner() {
+    banner.classList.remove('visible');
+    setTimeout(() => {
+      banner.style.display = 'none';
+    }, 350);
+  }
+
+  function openPreferencesModal() {
+    const consent = pixel.getConsent();
+    if (chkAnalytics) chkAnalytics.checked = Boolean(consent.analytics);
+    if (chkMarketing) chkMarketing.checked = Boolean(consent.marketing);
+
+    prefModal?.classList.add('open');
+    prefModal?.setAttribute('aria-hidden', 'false');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closePreferencesModal() {
+    prefModal?.classList.remove('open');
+    prefModal?.setAttribute('aria-hidden', 'true');
+    const quoteModal = document.getElementById('quote-modal');
+    const privacyModal = document.getElementById('privacy-modal');
+    if (!quoteModal?.classList.contains('open') && !privacyModal?.classList.contains('open')) {
+      document.body.style.overflow = '';
+    }
+  }
+
+  // Aceptar todas
+  btnAccept?.addEventListener('click', () => {
+    pixel.setConsent({ analytics: true, marketing: true });
+    dismissBanner();
+  });
+
+  // Solo necesarias
+  btnEssential?.addEventListener('click', () => {
+    pixel.setConsent({ analytics: false, marketing: false });
+    dismissBanner();
+  });
+
+  // Abrir modal de personalización desde el banner
+  btnPreferences?.addEventListener('click', () => {
+    openPreferencesModal();
+  });
+
+  // Cerrar modal de preferencias
+  btnPrefClose?.addEventListener('click', closePreferencesModal);
+  prefModal?.addEventListener('click', (e) => {
+    if (e.target === prefModal) closePreferencesModal();
+  });
+
+  // Guardar preferencias personalizadas
+  btnSavePrefs?.addEventListener('click', () => {
+    const analytics = chkAnalytics ? chkAnalytics.checked : false;
+    const marketing = chkMarketing ? chkMarketing.checked : false;
+    pixel.setConsent({ analytics, marketing });
+    closePreferencesModal();
+    dismissBanner();
+  });
+
+  // Rechazar opcionales desde el modal
+  btnRejectOptional?.addEventListener('click', () => {
+    if (chkAnalytics) chkAnalytics.checked = false;
+    if (chkMarketing) chkMarketing.checked = false;
+    pixel.setConsent({ analytics: false, marketing: false });
+    closePreferencesModal();
+    dismissBanner();
+  });
+
+  // Escuchar clics en botones de "Configuración de Cookies" (ej. en el footer)
+  document.addEventListener('click', (e) => {
+    const target = e.target.closest('.trigger-cookies-preferences');
+    if (target) {
+      e.preventDefault();
+      openPreferencesModal();
+    }
+  });
+}
+
+// Configurar modal de Aviso de Privacidad Integral
+function setupPrivacyModal() {
+  if (privacyModalInitialized) return;
+  privacyModalInitialized = true;
+
+  const modal = document.getElementById('privacy-modal');
+  const closeBtn = document.getElementById('btn-privacy-modal-close');
+  const understoodBtn = document.getElementById('btn-privacy-modal-understood');
+
+  function openPrivacyModal(triggerSource = 'Generic') {
+    modal?.classList.add('open');
+    modal?.setAttribute('aria-hidden', 'false');
+    document.body.style.overflow = 'hidden';
+    pixel.recordEvent('PrivacyModalView', { source: triggerSource });
+  }
+
+  function closePrivacyModal() {
+    modal?.classList.remove('open');
+    modal?.setAttribute('aria-hidden', 'true');
+    const quoteModal = document.getElementById('quote-modal');
+    if (!quoteModal?.classList.contains('open')) {
+      document.body.style.overflow = '';
+    }
+  }
+
+  document.addEventListener('click', (e) => {
+    const trigger = e.target.closest('.trigger-privacy-modal, a[href="#aviso-privacidad"]');
+    if (trigger) {
+      e.preventDefault();
+      const source = trigger.closest('#lead-form') ? 'Lead_Form' : trigger.closest('#contact-direct-form') ? 'Contact_Form' : trigger.closest('#cookie-consent-banner') ? 'Cookie_Banner' : 'Footer_Link';
+      openPrivacyModal(source);
+    }
+  });
+
+  closeBtn?.addEventListener('click', closePrivacyModal);
+  understoodBtn?.addEventListener('click', closePrivacyModal);
+
+  modal?.addEventListener('click', (e) => {
+    if (e.target === modal) {
+      closePrivacyModal();
+    }
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && modal?.classList.contains('open')) {
+      closePrivacyModal();
+    }
+  });
+
+  window.openPrivacyModal = openPrivacyModal;
+}
+
+// Trackers de clics en redes sociales (Facebook e Instagram)
+function setupSocialTrackers() {
+  document.addEventListener('click', (e) => {
+    const fbLink = e.target.closest('a[href*="facebook.com"]');
+    if (fbLink) {
+      pixel.recordEvent('SocialChannelClick', { platform: 'Facebook', url: fbLink.href });
+    }
+    const igLink = e.target.closest('a[href*="instagram.com"]');
+    if (igLink) {
+      pixel.recordEvent('SocialChannelClick', { platform: 'Instagram', url: igLink.href });
+    }
+  });
+}
+
+// Monitor global de movimientos y telemetría (Scroll Depth, Reveal, Catalog Reel)
+function setupGlobalMovementTracking() {
+  if (movementTrackingInitialized) return;
+  movementTrackingInitialized = true;
+
+  // Seguimiento de profundidad de scroll (25%, 50%, 75%, 90%)
+  const scrollMilestones = { 25: false, 50: false, 75: false, 90: false };
+  let scrollTicking = false;
+
+  window.addEventListener('scroll', () => {
+    if (!scrollTicking) {
+      requestAnimationFrame(() => {
+        const scrollTop = window.scrollY || document.documentElement.scrollTop;
+        const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+        if (docHeight > 0) {
+          const scrollPct = Math.round((scrollTop / docHeight) * 100);
+
+          [25, 50, 75, 90].forEach(milestone => {
+            if (scrollPct >= milestone && !scrollMilestones[milestone]) {
+              scrollMilestones[milestone] = true;
+              pixel.recordEvent('ScrollDepth', {
+                depth: `${milestone}%`,
+                page: currentRoute,
+                timestamp: Date.now()
+              });
+            }
+          });
+        }
+        scrollTicking = false;
+      });
+      scrollTicking = true;
+    }
+  }, { passive: true });
+}
+
 // Exponer en window para llamadas de botones
 window.cimaApp = {
   openQuoteModal: (model, modality) => {
     if (window.openQuoteModal) window.openQuoteModal(model, modality);
+  },
+  openPrivacyModal: (source) => {
+    if (window.openPrivacyModal) window.openPrivacyModal(source);
   }
 };
+
 
